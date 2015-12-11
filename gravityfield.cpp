@@ -2,6 +2,8 @@
 #include <math.h>
 #include <QDebug>
 
+#define PI 3.14159265
+
 inline float len(int x, int y)
 {
     x *= x;
@@ -15,9 +17,9 @@ inline float dist(int x0, int y0, int x1, int y1)
 }
 
 inline float gravity(DustField &f, int x0, int y0, int x1, int y1) {
-    int m1 = f.get(x0, y0);
-    int m2 = f.get(x1, y1);
-    return (float)m1 * m2 / dist(x0, y0, x1, y1);
+    float m1 = f.get(x0, y0) / 255.f;
+    float m2 = f.get(x1, y1) / 255.f;
+    return m1 * m2 / dist(x0, y0, x1, y1);
 }
 
 inline void unitVector(int x0, int y0, int x1, int y1, float *vx, float *vy){
@@ -34,12 +36,13 @@ GravityField::GravityField(DustField &f)
     h = f.height();
     field = new float[w * h * 2];
     for (int y = 0; y < h; ++y){
-        qDebug() << y;
         for (int x = 0; x < w; ++x){
             float rx = 0.f;
             float ry = 0.f;
             for (int iy = 0; iy < h; ++iy){
                 for (int ix = 0; ix < w; ++ix){
+                    if (x == ix && y == iy)
+                        continue;
                     float g = gravity(f, x, y, ix, iy);
                     float vx, vy;
                     unitVector(x, y, ix, iy, &vx, &vy);
@@ -48,8 +51,8 @@ GravityField::GravityField(DustField &f)
                 }
             }
             const int i = y * w + x;
-            field[i] = rx;
-            field[i+1] = ry;
+            field[i*2] = rx;
+            field[i*2+1] = ry;
             const int l = len(rx, ry);
             if (l > maxForce)
                 maxForce = l;
@@ -66,7 +69,7 @@ uchar *GravityField::encodedField()
     {
         float x = field[i*2];
         float y = field[i*2+1];
-        float h = atan2(y, x);
+        float h = (atan2(y, x) + PI) / (2* PI) * 360;
         float s = len(x,y) / maxForce;
         float r,g,b;
         hsv2rgb(h, s, 1.f, &r, &g, &b);

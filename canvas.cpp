@@ -1,5 +1,6 @@
 #include "canvas.h"
 #include <QImage>
+#include <QDebug>
 Canvas::Canvas(QWidget *parent) : QWidget(parent)
 {
     buffer = nullptr;
