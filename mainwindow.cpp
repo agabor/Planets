@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include <QDebug>
+#include <QTime>
 
 
 
@@ -11,6 +12,8 @@ DustCanvas * MainWindow::getRandomDustCanvas()
 {
     const int w0 = 10;
     const int h0 = 10;
+    QTime now = QTime::currentTime();
+    qsrand(now.msec());
     DustCanvas *dc0 = new DustCanvas(w0,h0);
     for (int y = 0; y < h0; ++y){
         for (int x = 0; x < w0; ++x){

@@ -17,10 +17,12 @@ void DustCanvas::set(int x, int y, uchar v)
 
 uchar DustCanvas::get(float x, float y)
 {
+    int x1 = ((int)x) == w-1 ? x : x + 1;
+    int y1 = ((int)y) == h-1 ? y : y + 1;
     uchar v00 = get((int)x, (int)y);
-    uchar v10 = get((int)x+1, (int)y);
-    uchar v01 = get((int)x, (int)y+1);
-    uchar v11 = get((int)x+1, (int)y+1);
+    uchar v10 = get(x1, (int)y);
+    uchar v01 = get((int)x, y1);
+    uchar v11 = get(x1, y1);
     float rx = x - (int)x;
     float ry = y - (int)y;
     return (v00 * (1-rx) + v10*rx)*(1-ry) + (v01 * (1-rx) + v11*rx)*ry;
