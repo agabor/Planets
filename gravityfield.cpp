@@ -1,4 +1,5 @@
 #include "gravityfield.h"
+#include <omp.h>
 #include <math.h>
 #include <QDebug>
 
@@ -33,6 +34,8 @@ inline void unitVector(int x0, int y0, int x1, int y1, float *vx, float *vy){
 void GravityField::generate()
 {
     p = 0;
+    int yc = 0;
+    #pragma omp parallel for
     for (int y = 0; y < h; ++y){
         for (int x = 0; x < w; ++x){
             float rx = 0.f;
@@ -55,7 +58,8 @@ void GravityField::generate()
             if (l > maxForce)
                 maxForce = l;
         }
-        p = 100 * y / h;
+        ++yc;
+        p = 100 * yc / h;
     }
 }
 

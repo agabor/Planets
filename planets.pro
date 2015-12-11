@@ -24,5 +24,5 @@ HEADERS  += mainwindow.h \
     gravityfield.h
 
 FORMS    += mainwindow.ui
-QMAKE_CXXFLAGS += -fopenmp
-LIBS += -fopenmp
+
+QMAKE_CXXFLAGS += -openmp
