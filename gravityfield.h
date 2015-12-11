@@ -10,7 +10,9 @@ public:
     uchar* encodedField();
 
 private:
-    int* field;
+    float maxForce;
+    int w, h;
+    float* field;
 };
 
 #endif // GRAVITYFIELD_H

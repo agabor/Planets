@@ -5,6 +5,7 @@
 
 #include <QDebug>
 #include <QTime>
+#include "gravityfield.h"
 
 
 
@@ -21,15 +22,15 @@ DustField * MainWindow::getRandomDustCanvas()
         }
     }
 
-    DustField *dc1 = dc0->upscale(2, 10);
-    DustField *dc2 = dc1->upscale(2, 10);
-    DustField *dc3 = dc2->upscale(2, 10);
-    DustField *dc4 = dc3->upscale(10, 10);
+    //DustField *dc1 = dc0->upscale(2, 10);
+    //DustField *dc2 = dc1->upscale(2, 10);
+    //DustField *dc3 = dc2->upscale(2, 10);
+    DustField *dc4 = dc0->upscale(10, 10);
 
     delete dc0;
-    delete dc1;
-    delete dc2;
-    delete dc3;
+    //delete dc1;
+    //delete dc2;
+   // delete dc3;
 
     return dc4;
 }
@@ -40,7 +41,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     dustCanvas = QSharedPointer<DustField>(getRandomDustCanvas());
-    ui->widget->setBuffer(dustCanvas->buffer);
+    GravityField *g = new GravityField(*dustCanvas.data());
+    ui->widget->setBuffer(g->encodedField());
 }
 
 MainWindow::~MainWindow()

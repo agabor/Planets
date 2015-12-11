@@ -18,7 +18,7 @@ void Canvas::paintEvent(QPaintEvent *)
     const int h = this->height();
     QPainter painter;
     painter.begin(this);
-    painter.drawImage(0,0,QImage(buffer,w,h,QImage::Format_Grayscale8));
+    painter.drawImage(0,0,QImage(buffer,w,h,QImage::Format_RGB888));
     painter.end();
 }
 

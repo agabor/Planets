@@ -19,8 +19,8 @@
      <widget class="Canvas" name="widget" native="true">
       <property name="minimumSize">
        <size>
-        <width>800</width>
-        <height>800</height>
+        <width>100</width>
+        <height>100</height>
        </size>
       </property>
       <property name="maximumSize">
