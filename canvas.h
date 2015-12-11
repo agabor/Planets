@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QPainter>
+#include <QImage>
 
 class Canvas : public QWidget
 {
@@ -10,10 +11,12 @@ class Canvas : public QWidget
 public:
     explicit Canvas(QWidget *parent = 0);
     void setBuffer(uchar * buffer);
+    void setFormat(QImage::Format format);
 protected:
     void paintEvent(QPaintEvent *) override;
 private:
     uchar * buffer;
+    QImage::Format format;
 };
 
 #endif // CANVAS_H

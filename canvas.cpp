@@ -11,6 +11,11 @@ void Canvas::setBuffer(uchar *buffer)
     this->buffer = buffer;
 }
 
+void Canvas::setFormat(QImage::Format format)
+{
+    this->format = format;
+}
+
 void Canvas::paintEvent(QPaintEvent *)
 {
     if (buffer == nullptr)
@@ -19,7 +24,7 @@ void Canvas::paintEvent(QPaintEvent *)
     const int h = this->height();
     QPainter painter;
     painter.begin(this);
-    painter.drawImage(0,0,QImage(buffer,w,h,QImage::Format_RGB888));
+    painter.drawImage(0,0,QImage(buffer,w,h,format));
     painter.end();
 }
 

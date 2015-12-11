@@ -5,14 +5,19 @@
 
 #include <QDebug>
 #include <QTime>
-#include "gravityfield.h"
+#include <QThread>
+#include <QtConcurrent/QtConcurrent>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QApplication>
+#include <QTimer>
 
 
 
 DustField * MainWindow::getRandomDustCanvas()
 {
-    const int w0 = 10;
-    const int h0 = 10;
+    const int w0 = 2;
+    const int h0 = 2;
     QTime now = QTime::currentTime();
     qsrand(now.msec());
     DustField *dc0 = new DustField(w0,h0);
@@ -22,17 +27,15 @@ DustField * MainWindow::getRandomDustCanvas()
         }
     }
 
-    //DustField *dc1 = dc0->upscale(2, 10);
-    //DustField *dc2 = dc1->upscale(2, 10);
-    //DustField *dc3 = dc2->upscale(2, 10);
-    DustField *dc4 = dc0->upscale(10, 10);
+    DustField *dc = nullptr;
+    do {
+        dc = dc0->upscale(2, 10);
+        delete dc0;
+        dc0 = dc;
 
-    delete dc0;
-    //delete dc1;
-    //delete dc2;
-   // delete dc3;
+    } while (dc->width() < size);
 
-    return dc4;
+    return dc;
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -40,12 +43,59 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    dustCanvas = QSharedPointer<DustField>(getRandomDustCanvas());
-    GravityField *g = new GravityField(*dustCanvas.data());
-    ui->widget->setBuffer(g->encodedField());
+    for(int i = 64; i < 2048; i*=2)
+        ui->sizeCbx->addItem(QString::number(i), QVariant(i));
+    ui->dustCanvas->setFormat(QImage::Format_Grayscale8);
+    ui->gravityCanvas->setFormat(QImage::Format_RGB888);
+    layout()->setSizeConstraint(QLayout::SetFixedSize);
+    ui->progressBar->setVisible(false);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::resize(Canvas *canvas, int size)
+{
+    QSize s2(size, size);
+    canvas->setBuffer(nullptr);
+    canvas->setMinimumSize(s2);
+    canvas->setMaximumSize(s2);
+}
+
+void MainWindow::on_sizeCbx_currentIndexChanged(int index)
+{
+    size = ui->sizeCbx->itemData(index).toInt();
+    resize(ui->dustCanvas, size);
+    resize(ui->gravityCanvas, size);
+}
+
+void MainWindow::on_dustBtn_clicked()
+{
+    dustField = QSharedPointer<DustField>(getRandomDustCanvas());
+    ui->dustCanvas->setBuffer(dustField->buffer);
+    ui->dustCanvas->repaint();
+}
+
+
+void MainWindow::on_gravityBtn_clicked()
+{
+    ui->progressBar->setVisible(true);
+    QApplication::processEvents();
+    gravityField = QSharedPointer<GravityField>::create(*dustField.data());
+    QFuture<void> f = QtConcurrent::run(gravityField.data(), &GravityField::generate);
+    auto fw = new QFutureWatcher<void>();
+    QTimer *timer = new QTimer;
+    timer->setInterval(1000);
+    timer->start();
+    connect(timer, &QTimer::timeout, [=](){ui->progressBar->setValue(gravityField->progress());});
+    connect(fw, &QFutureWatcherBase::finished, [=](){
+        ui->progressBar->setVisible(false);
+        ui->gravityCanvas->setBuffer(gravityField->encodedField());
+        ui->gravityCanvas->repaint();
+        timer->stop();
+        delete timer;
+    });
+    fw->setFuture(f);
 }

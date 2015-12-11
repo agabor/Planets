@@ -30,11 +30,9 @@ inline void unitVector(int x0, int y0, int x1, int y1, float *vx, float *vy){
     *vy /= d;
 }
 
-GravityField::GravityField(DustField &f)
+void GravityField::generate()
 {
-    w = f.width();
-    h = f.height();
-    field = new float[w * h * 2];
+    p = 0;
     for (int y = 0; y < h; ++y){
         for (int x = 0; x < w; ++x){
             float rx = 0.f;
@@ -57,7 +55,20 @@ GravityField::GravityField(DustField &f)
             if (l > maxForce)
                 maxForce = l;
         }
+        p = 100 * y / h;
     }
+}
+
+int GravityField::progress()
+{
+    return p;
+}
+
+GravityField::GravityField(DustField &f) : f(f)
+{
+    w = f.width();
+    h = f.height();
+    field = new float[w * h * 2];
 }
 
 void hsv2rgb(float h, float s, float v, float *r, float *g, float *b);
