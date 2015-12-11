@@ -27,9 +27,10 @@ DustField * MainWindow::getRandomDustCanvas()
         }
     }
 
+    int noise = ui->noiseSb->value();
     DustField *dc = nullptr;
     do {
-        dc = dc0->upscale(2, 10);
+        dc = dc0->upscale(2, noise);
         delete dc0;
         dc0 = dc;
 
@@ -49,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->gravityCanvas->setFormat(QImage::Format_RGB888);
     layout()->setSizeConstraint(QLayout::SetFixedSize);
     ui->progressBar->setVisible(false);
+    ui->gravityBtn->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -69,6 +71,7 @@ void MainWindow::on_sizeCbx_currentIndexChanged(int index)
     size = ui->sizeCbx->itemData(index).toInt();
     resize(ui->dustCanvas, size);
     resize(ui->gravityCanvas, size);
+    ui->gravityBtn->setEnabled(false);
 }
 
 void MainWindow::on_dustBtn_clicked()
@@ -76,11 +79,13 @@ void MainWindow::on_dustBtn_clicked()
     dustField = QSharedPointer<DustField>(getRandomDustCanvas());
     ui->dustCanvas->setBuffer(dustField->buffer);
     ui->dustCanvas->repaint();
+    ui->gravityBtn->setEnabled(true);
 }
 
 
 void MainWindow::on_gravityBtn_clicked()
 {
+    ui->progressBar->setValue(0);
     ui->progressBar->setVisible(true);
     QApplication::processEvents();
     gravityField = QSharedPointer<GravityField>::create(*dustField.data());

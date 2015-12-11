@@ -46,7 +46,7 @@ int DustField::height() const
 void upsample(DustField *dc0, DustField *dc1, int x, int y, int scale,  int r)
 {
     int v = dc0->get((float)x/scale,(float)y/scale);
-    int d = qrand() % (2*r) - r;
+    int d = r == 0 ? 0 : qrand() % (2*r) - r;
     dc1->set(x, y, std::max(0, std::min(255, v+d)));
 }
 
