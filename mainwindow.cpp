@@ -9,9 +9,8 @@
 
 DustCanvas * MainWindow::getRandomDustCanvas()
 {
-    int scale = 100;
-    const int w0 = ui->widget->width() / scale;
-    const int h0 = ui->widget->height() / scale;
+    const int w0 = 10;
+    const int h0 = 10;
     DustCanvas *dc0 = new DustCanvas(w0,h0);
     for (int y = 0; y < h0; ++y){
         for (int x = 0; x < w0; ++x){
@@ -19,13 +18,17 @@ DustCanvas * MainWindow::getRandomDustCanvas()
         }
     }
 
-    DustCanvas *dc1 = dc0->upscale(10);
-    DustCanvas *dc2 = dc1->upscale(10);
+    DustCanvas *dc1 = dc0->upscale(2, 10);
+    DustCanvas *dc2 = dc1->upscale(2, 10);
+    DustCanvas *dc3 = dc2->upscale(2, 10);
+    DustCanvas *dc4 = dc3->upscale(10, 10);
 
     delete dc0;
     delete dc1;
+    delete dc2;
+    delete dc3;
 
-    return dc2;
+    return dc4;
 }
 
 MainWindow::MainWindow(QWidget *parent) :

@@ -48,14 +48,14 @@ void upsample(DustCanvas *dc0, DustCanvas *dc1, int x, int y, int scale,  int r)
     dc1->set(x, y, std::max(0, std::min(255, v+d)));
 }
 
-DustCanvas * DustCanvas::upscale(int scale)
+DustCanvas * DustCanvas::upscale(int scale, int err)
 {
     const int w1 = w*scale;
     const int h1 = h*scale;
     DustCanvas *dc1 = new DustCanvas(w1,h1);
     for (int y = 0; y < h1; ++y){
         for (int x = 0; x < w1; ++x){
-            upsample(this, dc1, x, y, scale, 10);
+            upsample(this, dc1, x, y, scale, err);
         }
     }
 

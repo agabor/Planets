@@ -14,7 +14,7 @@ public:
     uchar *buffer;
     int width() const;
     int height() const;
-    DustCanvas * upscale(int scale);
+    DustCanvas * upscale(int scale, int err = 0);
 private:
     const int w, h;
 };
