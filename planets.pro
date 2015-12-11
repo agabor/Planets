@@ -15,10 +15,10 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     canvas.cpp \
-    dustcanvas.cpp
+    dustfield.cpp
 
 HEADERS  += mainwindow.h \
     canvas.h \
-    dustcanvas.h
+    dustfield.h
 
 FORMS    += mainwindow.ui

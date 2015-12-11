@@ -1,21 +1,21 @@
-#include "dustcanvas.h"
+#include "dustfield.h"
 
-DustCanvas::DustCanvas(int w, int h) : w(w), h(h)
+DustField::DustField(int w, int h) : w(w), h(h)
 {
     buffer = new uchar[w*h];
 }
 
-DustCanvas::~DustCanvas()
+DustField::~DustField()
 {
     delete [] buffer;
 }
 
-void DustCanvas::set(int x, int y, uchar v)
+void DustField::set(int x, int y, uchar v)
 {
     buffer[y * w + x] = v;
 }
 
-uchar DustCanvas::get(float x, float y)
+uchar DustField::get(float x, float y)
 {
     int x1 = ((int)x) == w-1 ? x : x + 1;
     int y1 = ((int)y) == h-1 ? y : y + 1;
@@ -28,33 +28,33 @@ uchar DustCanvas::get(float x, float y)
     return (v00 * (1-rx) + v10*rx)*(1-ry) + (v01 * (1-rx) + v11*rx)*ry;
 }
 
-uchar DustCanvas::get(int x, int y)
+uchar DustField::get(int x, int y)
 {
     return buffer[y * w + x];
 }
 
-int DustCanvas::width() const
+int DustField::width() const
 {
     return w;
 }
 
-int DustCanvas::height() const
+int DustField::height() const
 {
     return h;
 }
 
-void upsample(DustCanvas *dc0, DustCanvas *dc1, int x, int y, int scale,  int r)
+void upsample(DustField *dc0, DustField *dc1, int x, int y, int scale,  int r)
 {
     int v = dc0->get((float)x/scale,(float)y/scale);
     int d = qrand() % (2*r) - r;
     dc1->set(x, y, std::max(0, std::min(255, v+d)));
 }
 
-DustCanvas * DustCanvas::upscale(int scale, int err)
+DustField * DustField::upscale(int scale, int err)
 {
     const int w1 = w*scale;
     const int h1 = h*scale;
-    DustCanvas *dc1 = new DustCanvas(w1,h1);
+    DustField *dc1 = new DustField(w1,h1);
     for (int y = 0; y < h1; ++y){
         for (int x = 0; x < w1; ++x){
             upsample(this, dc1, x, y, scale, err);

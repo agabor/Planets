@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <dustcanvas.h>
+#include <dustfield.h>
 #include <QSharedPointer.h>
 
 namespace Ui {
@@ -16,10 +16,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    DustCanvas * getRandomDustCanvas();
+    DustField * getRandomDustCanvas();
 private:
     Ui::MainWindow *ui;
-    QSharedPointer<DustCanvas> dustCanvas;
+    QSharedPointer<DustField> dustCanvas;
 };
 
 #endif // MAINWINDOW_H

@@ -3,18 +3,18 @@
 
 #include <QGlobalStatic>
 
-class DustCanvas
+class DustField
 {
 public:
-    DustCanvas(int w, int h);
-    ~DustCanvas();
+    DustField(int w, int h);
+    ~DustField();
     void set(int x, int y, uchar v);
     uchar get(float x, float y);
     uchar get(int x, int y);
     uchar *buffer;
     int width() const;
     int height() const;
-    DustCanvas * upscale(int scale, int err = 0);
+    DustField * upscale(int scale, int err = 0);
 private:
     const int w, h;
 };
