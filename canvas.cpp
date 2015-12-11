@@ -1,6 +1,7 @@
 #include "canvas.h"
 #include <QImage>
 #include <QDebug>
+#include <QMouseEvent>
 Canvas::Canvas(QWidget *parent) : QWidget(parent)
 {
     buffer = nullptr;
@@ -26,5 +27,10 @@ void Canvas::paintEvent(QPaintEvent *)
     painter.begin(this);
     painter.drawImage(0,0,QImage(buffer,w,h,format));
     painter.end();
+}
+
+void Canvas::mousePressEvent(QMouseEvent *event)
+{
+    emit mousePress(event->x(), event->y());
 }
 

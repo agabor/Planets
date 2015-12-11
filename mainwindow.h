@@ -28,6 +28,8 @@ private slots:
 
     void on_gravityBtn_clicked();
 
+    void drawSpot(int x, int y);
+
 private:
     Ui::MainWindow *ui;
     QSharedPointer<DustField> dustField;

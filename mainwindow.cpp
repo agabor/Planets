@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     layout()->setSizeConstraint(QLayout::SetFixedSize);
     ui->progressBar->setVisible(false);
     ui->gravityBtn->setEnabled(false);
+    connect(ui->dustCanvas, &Canvas::mousePress, this, &MainWindow::drawSpot);
 }
 
 MainWindow::~MainWindow()
@@ -103,4 +104,29 @@ void MainWindow::on_gravityBtn_clicked()
         delete timer;
     });
     fw->setFuture(f);
+}
+
+void MainWindow::drawSpot(int x, int y)
+{
+    int size = ui->penSizeSb->value();
+    uchar color = ui->penColorSb->value();
+    int w = dustField->width();
+    int h = dustField->height();
+    int x0 = x - size < 0 ? 0 : x - size;
+    int x1 = x + size >= w ? w - 1 : x + size;
+    int y0 = y - size < 0 ? 0 : y - size;
+    int y1 = y + size >= h ? h - 1 : y + size;
+
+    int s2 = size * size;
+    for (int iy = y0; iy <= y1; ++iy){
+        for (int ix = x0; ix <= x1; ++ix){
+            int dx = ix - x;
+            int dy = iy - y;
+            if (dx * dx + dy * dy <= s2)
+            {
+                dustField->set(ix, iy, color);
+            }
+        }
+    }
+    ui->dustCanvas->repaint();
 }
