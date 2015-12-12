@@ -83,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    for(int i = 64; i < 2048; i*=2)
+    for(int i = 2; i < 2048; i*=2)
         ui->sizeCbx->addItem(QString::number(i), QVariant(i));
     ui->dustCanvas->setFormat(QImage::Format_Grayscale8);
     ui->gravityCanvas->setFormat(QImage::Format_RGB888);

@@ -4,14 +4,14 @@
 #include <QDebug>
 #include "colorencode.h"
 
-inline float len(int x, int y)
+template<typename T>
+inline float len(T x, T y)
 {
-    x *= x;
-    y *= y;
-    return sqrtf(x + y);
+    return sqrtf(x * x + y * y);
 }
 
-inline float dist(int x0, int y0, int x1, int y1)
+template<typename T>
+inline float dist(T x0, T y0, T x1, T y1)
 {
     return len(x1 - x0, y1 - y0);
 }
@@ -56,6 +56,7 @@ void GravityField::generate()
 {
     p = 0;
     int yc = 0;
+    maxForce = 0;
     #pragma omp parallel for
     for (int y = 0; y < h; ++y){
         for (int x = 0; x < w; ++x){
@@ -64,7 +65,7 @@ void GravityField::generate()
             const int i = (y * w + x) * 2;
             field[i] = rx;
             field[i+1] = ry;
-            const int l = len(rx, ry);
+            const float l = len(rx, ry);
             if (l > maxForce)
                 maxForce = l;
         }

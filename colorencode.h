@@ -62,7 +62,7 @@ inline void hsv2rgb(float h, float s, float v, float *r, float *g, float *b)
 
 inline void encode(float x, float y, float maxl, float *r, float *g, float *b)
 {
-    float h = (atan2(y, x) + PI) / (2* PI) * 360;
+    float h = (atan2(y, x) + PI) / (2 * PI) * 360;
     float l = sqrtf(x * x + y * y);
     float s = l / maxl;
     hsv2rgb(h, s, 1.f, r, g, b);
