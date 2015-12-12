@@ -13,6 +13,7 @@ public:
     int progress();
 
 private:
+    void resultantForce(int x, int y, float *rx, float *ry);
     float maxForce;
     int w, h;
     float* field;

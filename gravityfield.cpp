@@ -16,10 +16,8 @@ inline float dist(int x0, int y0, int x1, int y1)
     return len(x1 - x0, y1 - y0);
 }
 
-inline float gravity(DustField &f, int x0, int y0, int x1, int y1) {
-    float m1 = f.get(x0, y0) / 255.f;
-    float m2 = f.get(x1, y1) / 255.f;
-    float r = dist(x0, y0, x1, y1);
+inline float gravity(float m1, int x1, int y1, float m2, int x2, int y2) {
+    float r = dist(x1, y1, x2, y2);
     return m1 * m2 / (r * r);
 }
 
@@ -29,6 +27,31 @@ inline void unitVector(int x0, int y0, int x1, int y1, float *vx, float *vy){
     *vy = (y1 - y0) / d;
 }
 
+void GravityField::resultantForce(int x, int y, float *rx, float *ry)
+{
+    *rx = 0.f;
+    *ry = 0.f;
+    uchar cm1 = f.get(x, y);
+    if (cm1 == 0)
+        return;
+    float m1 = cm1 / 255.f;
+    for (int iy = 0; iy < h; ++iy){
+        for (int ix = 0; ix < w; ++ix){
+            if (x == ix && y == iy)
+                continue;
+            uchar cm2 = f.get(ix, iy);
+            if (cm2 == 0)
+                continue;
+            float m2 = cm2 / 255.f;
+            float g = gravity(m1, x, y, m2, ix, iy);
+            float vx, vy;
+            unitVector(x, y, ix, iy, &vx, &vy);
+            *rx += vx * g;
+            *ry += vy * g;
+        }
+    }
+}
+
 void GravityField::generate()
 {
     p = 0;
@@ -36,24 +59,9 @@ void GravityField::generate()
     #pragma omp parallel for
     for (int y = 0; y < h; ++y){
         for (int x = 0; x < w; ++x){
-            float rx = 0.f;
-            float ry = 0.f;
-            if (f.get(x,y) != 0){
-                for (int iy = 0; iy < h; ++iy){
-                    for (int ix = 0; ix < w; ++ix){
-                        if (x == ix && y == iy)
-                            continue;
-                        if (f.get(ix,iy) == 0)
-                            continue;
-                        float g = gravity(f, x, y, ix, iy);
-                        float vx, vy;
-                        unitVector(x, y, ix, iy, &vx, &vy);
-                        rx += vx * g;
-                        ry += vy * g;
-                    }
-                }
-            }
-            const int i = (y * w + x)*2;
+            float rx, ry;
+            resultantForce(x, y, &rx, &ry);
+            const int i = (y * w + x) * 2;
             field[i] = rx;
             field[i+1] = ry;
             const int l = len(rx, ry);
