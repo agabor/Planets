@@ -11,7 +11,7 @@
 #include <QFutureWatcher>
 #include <QApplication>
 #include <QTimer>
-
+#include <colorencode.h>
 
 
 DustField * MainWindow::getRandomDustCanvas()
@@ -39,6 +39,45 @@ DustField * MainWindow::getRandomDustCanvas()
     return dc;
 }
 
+uchar * MainWindow::colorCode(int rad)
+{
+    int r2 = rad * rad;
+    int w = rad * 2;
+    uchar * cc = new uchar[w * w * 3];
+    for (int y = 0; y < w; ++y)
+    {
+        for (int x = 0; x < w; ++x)
+        {
+            int i = (y * w + x) * 3;
+            if (x == rad || y == rad)
+            {
+                cc[i] = 0;
+                cc[i+1] = 0;
+                cc[i+2] = 0;
+                continue;
+            }
+
+            int vx = x - rad;
+            int vy = y - rad;
+            if (vx * vx + vy * vy > r2)
+            {
+                cc[i] = 255;
+                cc[i+1] = 255;
+                cc[i+2] = 255;
+                continue;
+            }
+            float r,g,b;
+            encode(vx, vy, rad, &r, &g, &b);
+
+            cc[i] = r*255;
+            cc[i+1] = g*255;
+            cc[i+2] = b*255;
+        }
+    }
+
+    return cc;
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -51,7 +90,12 @@ MainWindow::MainWindow(QWidget *parent) :
     layout()->setSizeConstraint(QLayout::SetFixedSize);
     ui->progressBar->setVisible(false);
     ui->gravityBtn->setEnabled(false);
-    connect(ui->dustCanvas, &Canvas::mousePress, this, &MainWindow::drawSpot);
+    connect(ui->dustCanvas, &Canvas::mark, this, &MainWindow::drawSpot);
+
+    int rad = ui->colorCodeCanvas->width()/2;
+    uchar* cc = colorCode(rad);
+    ui->colorCodeCanvas->setFormat(QImage::Format_RGB888);
+    ui->colorCodeCanvas->setBuffer(cc);
 }
 
 MainWindow::~MainWindow()
@@ -67,12 +111,18 @@ void MainWindow::resize(Canvas *canvas, int size)
     canvas->setMaximumSize(s2);
 }
 
+void MainWindow::setCanvasSize()
+{
+    size = ui->sizeCbx->currentData().toInt();
+    int zoomed_size = size * ui->zoomSb->value();
+    resize(ui->dustCanvas, zoomed_size);
+    resize(ui->gravityCanvas, zoomed_size);
+    ui->gravityBtn->setEnabled(false);
+}
+
 void MainWindow::on_sizeCbx_currentIndexChanged(int index)
 {
-    size = ui->sizeCbx->itemData(index).toInt();
-    resize(ui->dustCanvas, size);
-    resize(ui->gravityCanvas, size);
-    ui->gravityBtn->setEnabled(false);
+    setCanvasSize();
 }
 
 void MainWindow::on_dustBtn_clicked()
@@ -129,4 +179,11 @@ void MainWindow::drawSpot(int x, int y)
         }
     }
     ui->dustCanvas->repaint();
+}
+
+void MainWindow::on_zoomSb_valueChanged(int v)
+{
+    ui->dustCanvas->setZoom(v);
+    ui->gravityCanvas->setZoom(v);
+    setCanvasSize();
 }

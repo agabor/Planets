@@ -21,7 +21,8 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     canvas.h \
     dustfield.h \
-    gravityfield.h
+    gravityfield.h \
+    colorencode.h
 
 FORMS    += mainwindow.ui
 

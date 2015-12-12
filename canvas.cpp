@@ -5,6 +5,8 @@
 Canvas::Canvas(QWidget *parent) : QWidget(parent)
 {
     buffer = nullptr;
+    isPressed = false;
+    zoom = 1;
 }
 
 void Canvas::setBuffer(uchar *buffer)
@@ -17,6 +19,11 @@ void Canvas::setFormat(QImage::Format format)
     this->format = format;
 }
 
+void Canvas::setZoom(int zoom)
+{
+    this->zoom = zoom;
+}
+
 void Canvas::paintEvent(QPaintEvent *)
 {
     if (buffer == nullptr)
@@ -25,12 +32,25 @@ void Canvas::paintEvent(QPaintEvent *)
     const int h = this->height();
     QPainter painter;
     painter.begin(this);
-    painter.drawImage(0,0,QImage(buffer,w,h,format));
+    QImage i(buffer,w/zoom,h/zoom,format);
+    painter.drawImage(0,0, i.scaled(w,h));
     painter.end();
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event)
 {
-    emit mousePress(event->x(), event->y());
+    isPressed = true;
+    emit mark(event->x() / zoom, event->y() / zoom);
+}
+
+void Canvas::mouseMoveEvent(QMouseEvent *event)
+{
+    if (isPressed)
+        emit mark(event->x() / zoom, event->y() / zoom);
+}
+
+void Canvas::mouseReleaseEvent(QMouseEvent *event)
+{
+    isPressed = false;
 }
 

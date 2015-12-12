@@ -21,6 +21,8 @@ public:
     DustField * getRandomDustCanvas();
     void Resize(int size);
     void resize(Canvas *canvas, int size);
+    uchar * colorCode(int rad);
+    void setCanvasSize();
 private slots:
     void on_sizeCbx_currentIndexChanged(int index);
 
@@ -29,6 +31,8 @@ private slots:
     void on_gravityBtn_clicked();
 
     void drawSpot(int x, int y);
+
+    void on_zoomSb_valueChanged(int v);
 
 private:
     Ui::MainWindow *ui;
