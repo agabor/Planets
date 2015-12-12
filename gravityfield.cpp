@@ -24,11 +24,9 @@ inline float gravity(DustField &f, int x0, int y0, int x1, int y1) {
 }
 
 inline void unitVector(int x0, int y0, int x1, int y1, float *vx, float *vy){
-    *vx = x1 - x0;
-    *vy = y1 - y0;
     float d = dist(x0, y0, x1, y1);
-    *vx /= d;
-    *vy /= d;
+    *vx = (x1 - x0) / d;
+    *vy = (y1 - y0) / d;
 }
 
 void GravityField::generate()
@@ -40,20 +38,24 @@ void GravityField::generate()
         for (int x = 0; x < w; ++x){
             float rx = 0.f;
             float ry = 0.f;
-            for (int iy = 0; iy < h; ++iy){
-                for (int ix = 0; ix < w; ++ix){
-                    if (x == ix && y == iy)
-                        continue;
-                    float g = gravity(f, x, y, ix, iy);
-                    float vx, vy;
-                    unitVector(x, y, ix, iy, &vx, &vy);
-                    rx += vx * g;
-                    ry += vy * g;
+            if (f.get(x,y) != 0){
+                for (int iy = 0; iy < h; ++iy){
+                    for (int ix = 0; ix < w; ++ix){
+                        if (x == ix && y == iy)
+                            continue;
+                        if (f.get(ix,iy) == 0)
+                            continue;
+                        float g = gravity(f, x, y, ix, iy);
+                        float vx, vy;
+                        unitVector(x, y, ix, iy, &vx, &vy);
+                        rx += vx * g;
+                        ry += vy * g;
+                    }
                 }
             }
-            const int i = y * w + x;
-            field[i*2] = rx;
-            field[i*2+1] = ry;
+            const int i = (y * w + x)*2;
+            field[i] = rx;
+            field[i+1] = ry;
             const int l = len(rx, ry);
             if (l > maxForce)
                 maxForce = l;
