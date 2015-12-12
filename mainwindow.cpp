@@ -168,13 +168,20 @@ void MainWindow::drawSpot(int x, int y)
     int y1 = y + size >= h ? h - 1 : y + size;
 
     int s2 = size * size;
+    int s12 = (size + 1) * (size + 1);
     for (int iy = y0; iy <= y1; ++iy){
         for (int ix = x0; ix <= x1; ++ix){
             int dx = ix - x;
             int dy = iy - y;
-            if (dx * dx + dy * dy <= s2)
+            int l2 = dx * dx + dy * dy;
+            if (l2 <= s2)
             {
                 dustField->set(ix, iy, color);
+            } else if (l2 < s12)
+            {
+                float r = (float)(s12 - l2) / (s12 - s2);
+                uchar p = dustField->get(ix, iy);
+                dustField->set(ix, iy, color * r + p * (1.f-r));
             }
         }
     }
