@@ -64,3 +64,29 @@ DustField * DustField::upscale(int scale, int err)
     return dc1;
 }
 
+void DustField::drawSpot(uchar color, int size, int x, int y)
+{
+    int x0 = x - size < 0 ? 0 : x - size;
+    int x1 = x + size >= w ? w - 1 : x + size;
+    int y0 = y - size < 0 ? 0 : y - size;
+    int y1 = y + size >= h ? h - 1 : y + size;
+
+    int s2 = size * size;
+    int s12 = (size + 1) * (size + 1);
+    for (int iy = y0; iy <= y1; ++iy){
+        for (int ix = x0; ix <= x1; ++ix){
+            int dx = ix - x;
+            int dy = iy - y;
+            int l2 = dx * dx + dy * dy;
+            if (l2 <= s2)
+            {
+                set(ix, iy, color);
+            } else if (l2 < s12)
+            {
+                float r = (float)(s12 - l2) / (s12 - s2);
+                uchar p = get(ix, iy);
+                set(ix, iy, color * r + p * (1.f-r));
+            }
+        }
+    }
+}

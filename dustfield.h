@@ -15,6 +15,7 @@ public:
     int width() const;
     int height() const;
     DustField * upscale(int scale, int err = 0);
+    void drawSpot(uchar color, int size, int x, int y);
 private:
     const int w, h;
 };

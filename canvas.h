@@ -13,6 +13,7 @@ public:
     void setBuffer(uchar * buffer);
     void setFormat(QImage::Format format);
     void setZoom(int zoom);
+    void drawSpot(uchar color, int size, int x, int y);
 signals:
     void mark(int x, int y);
 protected:
